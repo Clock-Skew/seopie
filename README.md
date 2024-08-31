@@ -1,6 +1,5 @@
 # SEO<sub>pie
 
-[![]([[https://i.ibb.co/MhP1vCP/Picsart-24-08-11-23-53-03-023.png](https://raw.githubusercontent.com/Clock-Skew/seopie/main/Picsart_24-08-11_23-53-03-023.png)](https://raw.githubusercontent.com/Clock-Skew/seopie/main/Picsart_24-08-11_23-53-03-023.png))](https://i.ibb.co/MhP1vCP/Picsart-24-08-11-23-53-03-023.png)
 
 ![Static Badge](https://img.shields.io/badge/SEO-pie-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Python-blue?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Site-Eval-white?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/SEO-Audit-yellow?style=for-the-badge) ![Static Badge](https://img.shields.io/badge/Quality-Assessment-black?style=for-the-badge) 
 
