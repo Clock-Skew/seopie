@@ -6,10 +6,10 @@ from typing import Any
 
 
 SEVERITY_WEIGHTS = {
-    "critical": 12,
+    "critical": 14,
     "high": 8,
     "medium": 4,
-    "low": 2,
+    "low": 1,
 }
 
 
@@ -62,6 +62,7 @@ class PageAudit:
     meta_description: str | None
     canonical: str | None
     robots: str | None
+    x_robots_tag: str | None
     h1_count: int
     headings: list[dict[str, str]]
     images_total: int
@@ -85,6 +86,7 @@ class PageAudit:
             "meta_description": self.meta_description,
             "canonical": self.canonical,
             "robots": self.robots,
+            "x_robots_tag": self.x_robots_tag,
             "h1_count": self.h1_count,
             "headings": self.headings,
             "images_total": self.images_total,
@@ -108,6 +110,7 @@ class AuditReport:
     pages_scanned: int
     score: int
     client_summary: str
+    category_scores: dict[str, int]
     pages: list[PageAudit]
     issues: list[Issue]
 
@@ -121,6 +124,7 @@ class AuditReport:
             pages_scanned=len(pages),
             score=score,
             client_summary=build_client_summary(score, issues, len(pages)),
+            category_scores=category_scores(issues, len(pages)),
             pages=pages,
             issues=issues,
         )
@@ -132,6 +136,7 @@ class AuditReport:
             "pages_scanned": self.pages_scanned,
             "score": self.score,
             "client_summary": self.client_summary,
+            "category_scores": self.category_scores,
             "issue_counts": issue_counts(self.issues),
             "issues": [issue.to_dict() for issue in self.issues],
             "pages": [page.to_dict() for page in self.pages],
@@ -151,6 +156,15 @@ def issue_counts(issues: list[Issue]) -> dict[str, int]:
     for issue in issues:
         counts[issue.severity] = counts.get(issue.severity, 0) + 1
     return counts
+
+
+def category_scores(issues: list[Issue], page_count: int) -> dict[str, int]:
+    categories = sorted({issue.category for issue in issues})
+    scores: dict[str, int] = {}
+    for category in categories:
+        category_issues = [issue for issue in issues if issue.category == category]
+        scores[category] = calculate_score(category_issues, page_count)
+    return scores
 
 
 def build_client_summary(score: int, issues: list[Issue], page_count: int) -> str:

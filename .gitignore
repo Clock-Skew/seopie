@@ -1,6 +1,8 @@
 __pycache__/
 *.py[cod]
 .venv/
+.pytest_cache/
+.mypy_cache/
 reports/
 dist/
 build/

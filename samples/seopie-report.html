@@ -16,6 +16,7 @@
       --amber: #b7791f;
       --red: #b42318;
       --blue: #1f5c99;
+      --navy: #101827;
     }
     * { box-sizing: border-box; }
     body {
@@ -38,6 +39,7 @@
     .eyebrow { color: #a6ff4d; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
     .meta { color: #cbd8c8; max-width: 920px; margin-top: 14px; }
     .summary-grid { display: grid; grid-template-columns: 1.3fr repeat(4, minmax(100px, .45fr)); gap: 14px; margin-top: 20px; }
+    .summary-panel { margin-top: 20px; background: #f6ffe9; border-color: #9fd377; }
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -61,6 +63,7 @@
     th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 12px; }
     th { background: #edf2e8; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
     .tag { display: inline-block; border: 1px solid currentColor; border-radius: 999px; padding: 2px 8px; font-size: .78rem; font-weight: 700; text-transform: uppercase; }
+    .category-grid { display: grid; grid-template-columns: minmax(0, .7fr) minmax(280px, 1fr); gap: 18px; align-items: start; }
     .pages { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
     .page-card dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; }
     .page-card dt { color: var(--muted); }
@@ -69,6 +72,7 @@
     @media (max-width: 760px) {
       header { padding-top: 34px; }
       .summary-grid { grid-template-columns: 1fr 1fr; }
+      .category-grid { grid-template-columns: 1fr; }
       .score { grid-column: 1 / -1; }
       table { display: block; overflow-x: auto; }
     }
@@ -78,28 +82,52 @@
   <header>
     <div class="eyebrow">SEOpie Core SEO Audit</div>
     <h1>https://example.com/</h1>
-    <p class="meta">Scanned 1 page(s) on 2026-05-13T22:21:49+00:00. SEOpie scanned 1 page(s) and found 1 high-priority SEO issue(s). Address indexability, metadata, broken links, and technical signals first because those items can directly affect search visibility and user trust.</p>
+    <p class="meta">Scanned 1 page(s) on 2026-05-13T22:34:23+00:00. SEOpie scanned 1 page(s) and found 1 high-priority SEO issue(s). Address indexability, metadata, broken links, and technical signals first because those items can directly affect search visibility and user trust.</p>
   </header>
   <main>
     <section class="summary-grid" aria-label="Audit summary">
-      <div class="panel score"><div><strong>78</strong><span>SEO score</span></div></div>
+      <div class="panel score"><div><strong>81</strong><span>SEO score</span></div></div>
       <div class="panel metric"><span>Critical</span><strong class="critical">0</strong></div>
       <div class="panel metric"><span>High</span><strong class="high">1</strong></div>
       <div class="panel metric"><span>Medium</span><strong class="medium">2</strong></div>
       <div class="panel metric"><span>Low</span><strong class="low">3</strong></div>
     </section>
 
+    <section class="panel summary-panel">
+      <h2>Client Summary</h2>
+      <p>SEOpie scanned 1 page(s) and found 1 high-priority SEO issue(s). Address indexability, metadata, broken links, and technical signals first because those items can directly affect search visibility and user trust.</p>
+    </section>
+
+    <section class="category-grid">
+      <div>
+        <h2>Category Scores</h2>
+        <table>
+          <thead><tr><th>Category</th><th>Score</th></tr></thead>
+          <tbody><tr><td>Content Quality</td><td><strong>96/100</strong></td></tr>
+<tr><td>Indexability</td><td><strong>99/100</strong></td></tr>
+<tr><td>Internal Links</td><td><strong>96/100</strong></td></tr>
+<tr><td>Metadata</td><td><strong>91/100</strong></td></tr>
+<tr><td>Structured Data</td><td><strong>99/100</strong></td></tr></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>How to Read This Report</h2>
+        <p>Start with critical and high findings, then work through medium items that affect content quality, linking, accessibility, and technical clarity. Low findings are still useful, but they usually represent cleanup or best-practice improvements.</p>
+      </div>
+    </section>
+
     <section>
       <h2>Priority Findings</h2>
       <table>
         <thead>
-          <tr><th>Severity</th><th>Category</th><th>Finding</th><th>URL</th><th>Recommendation</th></tr>
+          <tr><th>Severity</th><th>Category</th><th>Finding</th><th>Why It Matters</th><th>URL</th><th>Recommendation</th></tr>
         </thead>
         <tbody>
           <tr>
   <td><span class="tag low">low</span></td>
   <td>Metadata</td>
   <td><strong>Title tag is very short</strong><br>14 characters</td>
+  <td>Very short titles often miss useful keyword, service, or brand context.</td>
   <td>https://example.com/</td>
   <td>Expand the title with clearer topic or brand context.</td>
 </tr>
@@ -107,6 +135,7 @@
   <td><span class="tag high">high</span></td>
   <td>Metadata</td>
   <td><strong>Missing meta description</strong><br>No meta description was found.</td>
+  <td>A missing description gives search engines less control over the snippet shown to users.</td>
   <td>https://example.com/</td>
   <td>Add a plain-language meta description that summarizes the page value.</td>
 </tr>
@@ -114,6 +143,7 @@
   <td><span class="tag low">low</span></td>
   <td>Indexability</td>
   <td><strong>Missing canonical tag</strong><br>No rel=canonical tag was found.</td>
+  <td>Canonical tags help clarify the preferred URL when duplicate or similar pages exist.</td>
   <td>https://example.com/</td>
   <td>Add a canonical URL to reduce duplicate-content ambiguity.</td>
 </tr>
@@ -121,6 +151,7 @@
   <td><span class="tag medium">medium</span></td>
   <td>Content Quality</td>
   <td><strong>Page has thin body content</strong><br>21 words found.</td>
+  <td>The page may not contain enough useful body copy for its target intent.</td>
   <td>https://example.com/</td>
   <td>Add useful, specific content that answers the searcher&#x27;s intent.</td>
 </tr>
@@ -128,6 +159,7 @@
   <td><span class="tag medium">medium</span></td>
   <td>Internal Links</td>
   <td><strong>No internal links found</strong><br>The page does not link to another same-site URL.</td>
+  <td>Internal links help crawlers discover related pages and help users move toward conversion paths.</td>
   <td>https://example.com/</td>
   <td>Add relevant internal links to related pages or conversion paths.</td>
 </tr>
@@ -135,6 +167,7 @@
   <td><span class="tag low">low</span></td>
   <td>Structured Data</td>
   <td><strong>No structured data detected</strong><br>No JSON-LD or microdata blocks were found.</td>
+  <td>Structured data can help describe the page entity, service, article, product, or organization.</td>
   <td>https://example.com/</td>
   <td>Add relevant structured data when it helps describe the entity, service, article, or product.</td>
 </tr>
@@ -156,7 +189,9 @@
     <dt>Internal links</dt><dd>0</dd>
     <dt>External links</dt><dd>1</dd>
     <dt>Schema blocks</dt><dd>0</dd>
-    <dt>Response</dt><dd>119 ms</dd>
+    <dt>Indexable</dt><dd>Yes</dd>
+    <dt>X-Robots-Tag</dt><dd>None detected</dd>
+    <dt>Response</dt><dd>125 ms</dd>
     <dt>Page weight</dt><dd>528 bytes</dd>
   </dl>
 </article>

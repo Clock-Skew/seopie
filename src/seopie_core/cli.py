@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from . import __version__
 from .analyzer import scan_site
 from .crawler import Crawler, normalize_url
 from .reporters import write_csv, write_html, write_json
@@ -13,6 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="seopie",
         description="Run a bounded SEO audit and produce professional JSON, HTML, and CSV reports.",
     )
+    parser.add_argument("--version", action="version", version=f"SEOpie Core {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     scan = subparsers.add_parser("scan", help="Scan a URL and write SEO audit reports.")

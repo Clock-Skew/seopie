@@ -32,9 +32,12 @@ def write_html(report: AuditReport, path: Path) -> None:
 def render_html(report: AuditReport) -> str:
     counts = issue_counts(report.issues)
     issue_rows = "\n".join(render_issue_row(issue) for issue in report.issues) or (
-        "<tr><td colspan=\"5\">No issues found in the scanned sample.</td></tr>"
+        "<tr><td colspan=\"6\">No issues found in the scanned sample.</td></tr>"
     )
     page_cards = "\n".join(render_page_card(page) for page in report.pages)
+    category_rows = "\n".join(render_category_row(name, score) for name, score in sorted(report.category_scores.items())) or (
+        "<tr><td colspan=\"2\">No category penalties in this crawl sample.</td></tr>"
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -53,6 +56,7 @@ def render_html(report: AuditReport) -> str:
       --amber: #b7791f;
       --red: #b42318;
       --blue: #1f5c99;
+      --navy: #101827;
     }}
     * {{ box-sizing: border-box; }}
     body {{
@@ -75,6 +79,7 @@ def render_html(report: AuditReport) -> str:
     .eyebrow {{ color: #a6ff4d; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }}
     .meta {{ color: #cbd8c8; max-width: 920px; margin-top: 14px; }}
     .summary-grid {{ display: grid; grid-template-columns: 1.3fr repeat(4, minmax(100px, .45fr)); gap: 14px; margin-top: 20px; }}
+    .summary-panel {{ margin-top: 20px; background: #f6ffe9; border-color: #9fd377; }}
     .panel {{
       background: var(--panel);
       border: 1px solid var(--line);
@@ -98,6 +103,7 @@ def render_html(report: AuditReport) -> str:
     th, td {{ text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: 12px; }}
     th {{ background: #edf2e8; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }}
     .tag {{ display: inline-block; border: 1px solid currentColor; border-radius: 999px; padding: 2px 8px; font-size: .78rem; font-weight: 700; text-transform: uppercase; }}
+    .category-grid {{ display: grid; grid-template-columns: minmax(0, .7fr) minmax(280px, 1fr); gap: 18px; align-items: start; }}
     .pages {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }}
     .page-card dl {{ display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 12px 0 0; }}
     .page-card dt {{ color: var(--muted); }}
@@ -106,6 +112,7 @@ def render_html(report: AuditReport) -> str:
     @media (max-width: 760px) {{
       header {{ padding-top: 34px; }}
       .summary-grid {{ grid-template-columns: 1fr 1fr; }}
+      .category-grid {{ grid-template-columns: 1fr; }}
       .score {{ grid-column: 1 / -1; }}
       table {{ display: block; overflow-x: auto; }}
     }}
@@ -126,11 +133,30 @@ def render_html(report: AuditReport) -> str:
       <div class="panel metric"><span>Low</span><strong class="low">{counts["low"]}</strong></div>
     </section>
 
+    <section class="panel summary-panel">
+      <h2>Client Summary</h2>
+      <p>{escape(report.client_summary)}</p>
+    </section>
+
+    <section class="category-grid">
+      <div>
+        <h2>Category Scores</h2>
+        <table>
+          <thead><tr><th>Category</th><th>Score</th></tr></thead>
+          <tbody>{category_rows}</tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>How to Read This Report</h2>
+        <p>Start with critical and high findings, then work through medium items that affect content quality, linking, accessibility, and technical clarity. Low findings are still useful, but they usually represent cleanup or best-practice improvements.</p>
+      </div>
+    </section>
+
     <section>
       <h2>Priority Findings</h2>
       <table>
         <thead>
-          <tr><th>Severity</th><th>Category</th><th>Finding</th><th>URL</th><th>Recommendation</th></tr>
+          <tr><th>Severity</th><th>Category</th><th>Finding</th><th>Why It Matters</th><th>URL</th><th>Recommendation</th></tr>
         </thead>
         <tbody>
           {issue_rows}
@@ -150,11 +176,16 @@ def render_html(report: AuditReport) -> str:
 """
 
 
+def render_category_row(name: str, score: int) -> str:
+    return f"<tr><td>{escape(name)}</td><td><strong>{score}/100</strong></td></tr>"
+
+
 def render_issue_row(issue) -> str:
     return f"""<tr>
   <td><span class="tag {escape(issue.severity)}">{escape(issue.severity)}</span></td>
   <td>{escape(issue.category)}</td>
   <td><strong>{escape(issue.title)}</strong><br>{escape(issue.evidence)}</td>
+  <td>{escape(issue.description)}</td>
   <td>{escape(issue.url)}</td>
   <td>{escape(issue.recommendation)}</td>
 </tr>"""
@@ -172,6 +203,8 @@ def render_page_card(page) -> str:
     <dt>Internal links</dt><dd>{len(page.internal_links)}</dd>
     <dt>External links</dt><dd>{len(page.external_links)}</dd>
     <dt>Schema blocks</dt><dd>{page.schema_blocks}</dd>
+    <dt>Indexable</dt><dd>{"Yes" if page.indexable else "No"}</dd>
+    <dt>X-Robots-Tag</dt><dd>{escape(page.x_robots_tag or "None detected")}</dd>
     <dt>Response</dt><dd>{page.response_time_ms:.0f} ms</dd>
     <dt>Page weight</dt><dd>{page.page_weight_bytes:,} bytes</dd>
   </dl>

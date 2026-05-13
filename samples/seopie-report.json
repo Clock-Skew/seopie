@@ -1,9 +1,16 @@
 {
   "target_url": "https://example.com/",
-  "scanned_at": "2026-05-13T22:21:49+00:00",
+  "scanned_at": "2026-05-13T22:34:23+00:00",
   "pages_scanned": 1,
-  "score": 78,
+  "score": 81,
   "client_summary": "SEOpie scanned 1 page(s) and found 1 high-priority SEO issue(s). Address indexability, metadata, broken links, and technical signals first because those items can directly affect search visibility and user trust.",
+  "category_scores": {
+    "Content Quality": 96,
+    "Indexability": 99,
+    "Internal Links": 96,
+    "Metadata": 91,
+    "Structured Data": 99
+  },
   "issue_counts": {
     "critical": 0,
     "high": 1,
@@ -16,7 +23,7 @@
       "category": "Metadata",
       "severity": "low",
       "title": "Title tag is very short",
-      "description": "Title tag is very short",
+      "description": "Very short titles often miss useful keyword, service, or brand context.",
       "recommendation": "Expand the title with clearer topic or brand context.",
       "url": "https://example.com/",
       "evidence": "14 characters"
@@ -26,7 +33,7 @@
       "category": "Metadata",
       "severity": "high",
       "title": "Missing meta description",
-      "description": "Missing meta description",
+      "description": "A missing description gives search engines less control over the snippet shown to users.",
       "recommendation": "Add a plain-language meta description that summarizes the page value.",
       "url": "https://example.com/",
       "evidence": "No meta description was found."
@@ -36,7 +43,7 @@
       "category": "Indexability",
       "severity": "low",
       "title": "Missing canonical tag",
-      "description": "Missing canonical tag",
+      "description": "Canonical tags help clarify the preferred URL when duplicate or similar pages exist.",
       "recommendation": "Add a canonical URL to reduce duplicate-content ambiguity.",
       "url": "https://example.com/",
       "evidence": "No rel=canonical tag was found."
@@ -46,7 +53,7 @@
       "category": "Content Quality",
       "severity": "medium",
       "title": "Page has thin body content",
-      "description": "Page has thin body content",
+      "description": "The page may not contain enough useful body copy for its target intent.",
       "recommendation": "Add useful, specific content that answers the searcher's intent.",
       "url": "https://example.com/",
       "evidence": "21 words found."
@@ -56,7 +63,7 @@
       "category": "Internal Links",
       "severity": "medium",
       "title": "No internal links found",
-      "description": "No internal links found",
+      "description": "Internal links help crawlers discover related pages and help users move toward conversion paths.",
       "recommendation": "Add relevant internal links to related pages or conversion paths.",
       "url": "https://example.com/",
       "evidence": "The page does not link to another same-site URL."
@@ -66,7 +73,7 @@
       "category": "Structured Data",
       "severity": "low",
       "title": "No structured data detected",
-      "description": "No structured data detected",
+      "description": "Structured data can help describe the page entity, service, article, product, or organization.",
       "recommendation": "Add relevant structured data when it helps describe the entity, service, article, or product.",
       "url": "https://example.com/",
       "evidence": "No JSON-LD or microdata blocks were found."
@@ -81,6 +88,7 @@
       "meta_description": null,
       "canonical": null,
       "robots": null,
+      "x_robots_tag": null,
       "h1_count": 1,
       "headings": [
         {
@@ -98,7 +106,7 @@
       "schema_types": [],
       "word_count": 21,
       "page_weight_bytes": 528,
-      "response_time_ms": 118.88,
+      "response_time_ms": 124.56,
       "indexable": true,
       "issues": [
         {
@@ -106,7 +114,7 @@
           "category": "Metadata",
           "severity": "low",
           "title": "Title tag is very short",
-          "description": "Title tag is very short",
+          "description": "Very short titles often miss useful keyword, service, or brand context.",
           "recommendation": "Expand the title with clearer topic or brand context.",
           "url": "https://example.com/",
           "evidence": "14 characters"
@@ -116,7 +124,7 @@
           "category": "Metadata",
           "severity": "high",
           "title": "Missing meta description",
-          "description": "Missing meta description",
+          "description": "A missing description gives search engines less control over the snippet shown to users.",
           "recommendation": "Add a plain-language meta description that summarizes the page value.",
           "url": "https://example.com/",
           "evidence": "No meta description was found."
@@ -126,7 +134,7 @@
           "category": "Indexability",
           "severity": "low",
           "title": "Missing canonical tag",
-          "description": "Missing canonical tag",
+          "description": "Canonical tags help clarify the preferred URL when duplicate or similar pages exist.",
           "recommendation": "Add a canonical URL to reduce duplicate-content ambiguity.",
           "url": "https://example.com/",
           "evidence": "No rel=canonical tag was found."
@@ -136,7 +144,7 @@
           "category": "Content Quality",
           "severity": "medium",
           "title": "Page has thin body content",
-          "description": "Page has thin body content",
+          "description": "The page may not contain enough useful body copy for its target intent.",
           "recommendation": "Add useful, specific content that answers the searcher's intent.",
           "url": "https://example.com/",
           "evidence": "21 words found."
@@ -146,7 +154,7 @@
           "category": "Internal Links",
           "severity": "medium",
           "title": "No internal links found",
-          "description": "No internal links found",
+          "description": "Internal links help crawlers discover related pages and help users move toward conversion paths.",
           "recommendation": "Add relevant internal links to related pages or conversion paths.",
           "url": "https://example.com/",
           "evidence": "The page does not link to another same-site URL."
@@ -156,7 +164,7 @@
           "category": "Structured Data",
           "severity": "low",
           "title": "No structured data detected",
-          "description": "No structured data detected",
+          "description": "Structured data can help describe the page entity, service, article, product, or organization.",
           "recommendation": "Add relevant structured data when it helps describe the entity, service, article, or product.",
           "url": "https://example.com/",
           "evidence": "No JSON-LD or microdata blocks were found."
