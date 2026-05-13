@@ -39,6 +39,48 @@ class AnalyzerTests(unittest.TestCase):
         self.assertIn("missing-image-alt", issue_ids)
         self.assertIn("broken-internal-links", issue_ids)
 
+    def test_x_robots_tag_noindex_is_indexability_issue(self):
+        html = """<!doctype html>
+        <html lang="en">
+          <head>
+            <title>Example Service Page</title>
+            <meta name="description" content="A useful page description that explains the service clearly for searchers.">
+            <link rel="canonical" href="https://example.com/">
+          </head>
+          <body><h1>Example Service Page</h1><p>This page has enough visible copy for the scanner fixture.</p></body>
+        </html>"""
+        fetch = FetchResult(
+            url="https://example.com/",
+            final_url="https://example.com/",
+            status_code=200,
+            headers={"Content-Type": "text/html", "X-Robots-Tag": "googlebot: noindex"},
+            html=html,
+            elapsed_ms=120,
+            size_bytes=len(html.encode("utf-8")),
+        )
+
+        page = analyze_page(fetch, {})
+
+        self.assertFalse(page.indexable)
+        self.assertIn("x-robots-noindex", {issue.id for issue in page.issues})
+
+    def test_non_html_response_skips_page_level_findings(self):
+        fetch = FetchResult(
+            url="https://example.com/file.pdf",
+            final_url="https://example.com/file.pdf",
+            status_code=200,
+            headers={"Content-Type": "application/pdf"},
+            html="",
+            elapsed_ms=80,
+            size_bytes=1024,
+        )
+
+        page = analyze_page(fetch, {})
+        issue_ids = {issue.id for issue in page.issues}
+
+        self.assertEqual(issue_ids, {"non-html-content"})
+        self.assertEqual(page.word_count, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

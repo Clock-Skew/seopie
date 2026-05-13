@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 import re
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
-from .crawler import extract_links, normalize_url
+from .crawler import extract_links, is_probably_html, normalize_url
 from .models import AuditReport, FetchResult, Issue, PageAudit
 
 
@@ -29,10 +29,15 @@ def analyze_page(fetch: FetchResult, status_by_url: dict[str, int | None]) -> Pa
     elif fetch.status_code >= 300:
         issues.append(issue("redirect-status", "Technical SEO", "low", "Page resolved through a redirect", fetch, str(fetch.status_code)))
 
+    if fetch.ok and not is_probably_html(fetch.headers):
+        issues.append(issue("non-html-content", "Technical SEO", "low", "Fetched URL is not HTML", fetch, content_type(fetch.headers)))
+        return minimal_page_audit(fetch, issues)
+
     title = get_text(soup.find("title"))
     meta_description = get_meta_content(soup, "description")
     canonical = get_link_href(soup, "canonical")
     robots = get_meta_content(soup, "robots")
+    x_robots_tag = get_header(fetch.headers, "X-Robots-Tag")
     headings = extract_headings(soup)
     h1_count = sum(1 for heading in headings if heading["level"] == "h1")
     images = soup.find_all("img")
@@ -44,9 +49,9 @@ def analyze_page(fetch: FetchResult, status_by_url: dict[str, int | None]) -> Pa
     broken_internal = [link for link in internal_links if is_broken(status_by_url.get(normalize_url(link)))]
     schema_types, schema_blocks = extract_schema(soup)
     word_count = count_words(soup)
-    indexable = is_indexable(robots)
+    indexable = is_indexable(robots, x_robots_tag)
 
-    issues.extend(metadata_issues(fetch, title, meta_description, canonical, robots, indexable))
+    issues.extend(metadata_issues(fetch, title, meta_description, canonical, robots, x_robots_tag, indexable))
     issues.extend(structure_issues(fetch, h1_count, headings, word_count))
     issues.extend(link_issues(fetch, internal_links, broken_internal))
     issues.extend(image_issues(fetch, len(images), images_missing_alt))
@@ -61,6 +66,7 @@ def analyze_page(fetch: FetchResult, status_by_url: dict[str, int | None]) -> Pa
         meta_description=meta_description,
         canonical=canonical,
         robots=robots,
+        x_robots_tag=x_robots_tag,
         h1_count=h1_count,
         headings=headings,
         images_total=len(images),
@@ -77,7 +83,41 @@ def analyze_page(fetch: FetchResult, status_by_url: dict[str, int | None]) -> Pa
     )
 
 
-def metadata_issues(fetch: FetchResult, title: str | None, description: str | None, canonical: str | None, robots: str | None, indexable: bool) -> list[Issue]:
+def minimal_page_audit(fetch: FetchResult, issues: list[Issue]) -> PageAudit:
+    return PageAudit(
+        url=fetch.url,
+        final_url=fetch.final_url,
+        status_code=fetch.status_code,
+        title=None,
+        meta_description=None,
+        canonical=None,
+        robots=None,
+        x_robots_tag=get_header(fetch.headers, "X-Robots-Tag"),
+        h1_count=0,
+        headings=[],
+        images_total=0,
+        images_missing_alt=0,
+        internal_links=[],
+        external_links=[],
+        schema_blocks=0,
+        schema_types=[],
+        word_count=0,
+        page_weight_bytes=fetch.size_bytes,
+        response_time_ms=round(fetch.elapsed_ms, 2),
+        indexable=is_indexable(None, get_header(fetch.headers, "X-Robots-Tag")),
+        issues=issues,
+    )
+
+
+def metadata_issues(
+    fetch: FetchResult,
+    title: str | None,
+    description: str | None,
+    canonical: str | None,
+    robots: str | None,
+    x_robots_tag: str | None,
+    indexable: bool,
+) -> list[Issue]:
     issues: list[Issue] = []
     if not title:
         issues.append(issue("missing-title", "Metadata", "high", "Missing title tag", fetch, "No <title> tag was found."))
@@ -95,8 +135,12 @@ def metadata_issues(fetch: FetchResult, title: str | None, description: str | No
 
     if not canonical:
         issues.append(issue("missing-canonical", "Indexability", "low", "Missing canonical tag", fetch, "No rel=canonical tag was found."))
+    elif normalize_url(urljoin(fetch.final_url, canonical)) != normalize_url(fetch.final_url):
+        issues.append(issue("canonical-mismatch", "Indexability", "low", "Canonical differs from final URL", fetch, canonical))
     if robots and not indexable:
         issues.append(issue("noindex", "Indexability", "high", "Page is marked noindex", fetch, robots))
+    elif x_robots_tag and not indexable:
+        issues.append(issue("x-robots-noindex", "Indexability", "high", "X-Robots-Tag marks page noindex", fetch, x_robots_tag))
     return issues
 
 
@@ -153,7 +197,9 @@ def issue(issue_id: str, category: str, severity: str, title: str, fetch: FetchR
         "long-meta-description": "Reduce the description to roughly 150-160 characters.",
         "short-meta-description": "Expand the description so it gives searchers a clear reason to click.",
         "missing-canonical": "Add a canonical URL to reduce duplicate-content ambiguity.",
+        "canonical-mismatch": "Confirm the canonical target is intentional and points to the preferred indexable URL.",
         "noindex": "Confirm whether this page should be excluded from search results.",
+        "x-robots-noindex": "Confirm whether the HTTP X-Robots-Tag should exclude this page from search results.",
         "missing-h1": "Add one clear H1 that describes the page's primary topic.",
         "multiple-h1": "Use one primary H1 and move secondary section titles to H2 or lower.",
         "heading-skip": "Use heading levels in sequence so users and crawlers can understand the structure.",
@@ -167,13 +213,40 @@ def issue(issue_id: str, category: str, severity: str, title: str, fetch: FetchR
         "fetch-error": "Confirm the page is reachable from the scanner environment.",
         "bad-status": "Fix the page response so important URLs return a successful status.",
         "redirect-status": "Point internal references directly at the final canonical URL when practical.",
+        "non-html-content": "Review whether this URL belongs in the crawl path or should be linked with clearer context.",
+    }
+    descriptions = {
+        "missing-title": "Search engines and browser tabs rely on title text to understand the page topic.",
+        "long-title": "Long titles can be truncated in search results and dilute the page's primary topic.",
+        "short-title": "Very short titles often miss useful keyword, service, or brand context.",
+        "missing-meta-description": "A missing description gives search engines less control over the snippet shown to users.",
+        "long-meta-description": "Long descriptions are likely to be truncated before the value proposition is complete.",
+        "short-meta-description": "Short descriptions often fail to explain why a searcher should click.",
+        "missing-canonical": "Canonical tags help clarify the preferred URL when duplicate or similar pages exist.",
+        "canonical-mismatch": "A mismatched canonical can consolidate ranking signals to another URL.",
+        "noindex": "The page includes a robots directive that can keep it out of search results.",
+        "x-robots-noindex": "The HTTP robots header can prevent indexing even when page markup looks indexable.",
+        "missing-h1": "The page lacks a primary visible heading for users and crawlers.",
+        "multiple-h1": "Multiple H1 tags can make the primary topic less clear.",
+        "heading-skip": "Skipped heading levels make the document outline harder to parse.",
+        "thin-content": "The page may not contain enough useful body copy for its target intent.",
+        "no-internal-links": "Internal links help crawlers discover related pages and help users move toward conversion paths.",
+        "broken-internal-links": "Broken internal links waste crawl paths and create poor user experience.",
+        "missing-image-alt": "Missing alt text weakens accessibility and image context.",
+        "missing-schema": "Structured data can help describe the page entity, service, article, product, or organization.",
+        "large-html": "Large HTML responses can slow delivery before assets are even considered.",
+        "slow-response": "Slow initial responses can affect user experience and performance diagnostics.",
+        "fetch-error": "The scanner could not retrieve the URL.",
+        "bad-status": "Important pages should generally return successful HTTP status codes.",
+        "redirect-status": "Redirects are sometimes correct, but internal links should usually point to final URLs.",
+        "non-html-content": "This fetched URL is not an HTML document, so page-level SEO checks were skipped.",
     }
     return Issue(
         id=issue_id,
         category=category,
         severity=severity,
         title=title,
-        description=title,
+        description=descriptions.get(issue_id, title),
         recommendation=recommendations.get(issue_id, "Review and resolve this issue."),
         url=fetch.final_url,
         evidence=evidence,
@@ -236,11 +309,24 @@ def count_words(soup: BeautifulSoup) -> int:
     return len(re.findall(r"\b[\w'-]+\b", soup.get_text(" ", strip=True)))
 
 
-def is_indexable(robots: str | None) -> bool:
-    if not robots:
+def is_indexable(robots: str | None, x_robots_tag: str | None = None) -> bool:
+    directives = ",".join(value for value in [robots, x_robots_tag] if value)
+    if not directives:
         return True
-    directives = {part.strip().lower() for part in robots.split(",")}
-    return "noindex" not in directives
+    parsed = {part.strip().lower() for part in directives.split(",")}
+    return not any(part == "none" or "noindex" in part for part in parsed)
+
+
+def get_header(headers: dict[str, str], name: str) -> str | None:
+    for key, value in headers.items():
+        if key.lower() == name.lower():
+            cleaned = value.strip()
+            return cleaned or None
+    return None
+
+
+def content_type(headers: dict[str, str]) -> str:
+    return get_header(headers, "Content-Type") or "unknown content type"
 
 
 def is_broken(status_code: int | None) -> bool:
