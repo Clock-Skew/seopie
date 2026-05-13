@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seopie-core"
+version = "0.1.0"
+description = "SEO audit CLI that crawls a small site sample and produces JSON, HTML, and CSV reports."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Daniel R. Hall" }
+]
+keywords = ["seo", "audit", "cli", "crawler", "html-report", "marketing"]
+dependencies = [
+  "beautifulsoup4>=4.12",
+  "requests>=2.31"
+]
+
+[project.urls]
+Homepage = "https://github.com/Clock-Skew/seopie"
+Issues = "https://github.com/Clock-Skew/seopie/issues"
+
+[project.scripts]
+seopie = "seopie_core.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

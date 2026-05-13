@@ -1,0 +1,7 @@
+severity,category,id,title,url,evidence,recommendation
+low,Metadata,short-title,Title tag is very short,https://example.com/,14 characters,Expand the title with clearer topic or brand context.
+high,Metadata,missing-meta-description,Missing meta description,https://example.com/,No meta description was found.,Add a plain-language meta description that summarizes the page value.
+low,Indexability,missing-canonical,Missing canonical tag,https://example.com/,No rel=canonical tag was found.,Add a canonical URL to reduce duplicate-content ambiguity.
+medium,Content Quality,thin-content,Page has thin body content,https://example.com/,21 words found.,"Add useful, specific content that answers the searcher's intent."
+medium,Internal Links,no-internal-links,No internal links found,https://example.com/,The page does not link to another same-site URL.,Add relevant internal links to related pages or conversion paths.
+low,Structured Data,missing-schema,No structured data detected,https://example.com/,No JSON-LD or microdata blocks were found.,"Add relevant structured data when it helps describe the entity, service, article, or product."

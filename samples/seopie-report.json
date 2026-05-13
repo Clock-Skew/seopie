@@ -1,0 +1,167 @@
+{
+  "target_url": "https://example.com/",
+  "scanned_at": "2026-05-13T22:21:49+00:00",
+  "pages_scanned": 1,
+  "score": 78,
+  "client_summary": "SEOpie scanned 1 page(s) and found 1 high-priority SEO issue(s). Address indexability, metadata, broken links, and technical signals first because those items can directly affect search visibility and user trust.",
+  "issue_counts": {
+    "critical": 0,
+    "high": 1,
+    "medium": 2,
+    "low": 3
+  },
+  "issues": [
+    {
+      "id": "short-title",
+      "category": "Metadata",
+      "severity": "low",
+      "title": "Title tag is very short",
+      "description": "Title tag is very short",
+      "recommendation": "Expand the title with clearer topic or brand context.",
+      "url": "https://example.com/",
+      "evidence": "14 characters"
+    },
+    {
+      "id": "missing-meta-description",
+      "category": "Metadata",
+      "severity": "high",
+      "title": "Missing meta description",
+      "description": "Missing meta description",
+      "recommendation": "Add a plain-language meta description that summarizes the page value.",
+      "url": "https://example.com/",
+      "evidence": "No meta description was found."
+    },
+    {
+      "id": "missing-canonical",
+      "category": "Indexability",
+      "severity": "low",
+      "title": "Missing canonical tag",
+      "description": "Missing canonical tag",
+      "recommendation": "Add a canonical URL to reduce duplicate-content ambiguity.",
+      "url": "https://example.com/",
+      "evidence": "No rel=canonical tag was found."
+    },
+    {
+      "id": "thin-content",
+      "category": "Content Quality",
+      "severity": "medium",
+      "title": "Page has thin body content",
+      "description": "Page has thin body content",
+      "recommendation": "Add useful, specific content that answers the searcher's intent.",
+      "url": "https://example.com/",
+      "evidence": "21 words found."
+    },
+    {
+      "id": "no-internal-links",
+      "category": "Internal Links",
+      "severity": "medium",
+      "title": "No internal links found",
+      "description": "No internal links found",
+      "recommendation": "Add relevant internal links to related pages or conversion paths.",
+      "url": "https://example.com/",
+      "evidence": "The page does not link to another same-site URL."
+    },
+    {
+      "id": "missing-schema",
+      "category": "Structured Data",
+      "severity": "low",
+      "title": "No structured data detected",
+      "description": "No structured data detected",
+      "recommendation": "Add relevant structured data when it helps describe the entity, service, article, or product.",
+      "url": "https://example.com/",
+      "evidence": "No JSON-LD or microdata blocks were found."
+    }
+  ],
+  "pages": [
+    {
+      "url": "https://example.com/",
+      "final_url": "https://example.com/",
+      "status_code": 200,
+      "title": "Example Domain",
+      "meta_description": null,
+      "canonical": null,
+      "robots": null,
+      "h1_count": 1,
+      "headings": [
+        {
+          "level": "h1",
+          "text": "Example Domain"
+        }
+      ],
+      "images_total": 0,
+      "images_missing_alt": 0,
+      "internal_links": [],
+      "external_links": [
+        "https://iana.org/domains/example"
+      ],
+      "schema_blocks": 0,
+      "schema_types": [],
+      "word_count": 21,
+      "page_weight_bytes": 528,
+      "response_time_ms": 118.88,
+      "indexable": true,
+      "issues": [
+        {
+          "id": "short-title",
+          "category": "Metadata",
+          "severity": "low",
+          "title": "Title tag is very short",
+          "description": "Title tag is very short",
+          "recommendation": "Expand the title with clearer topic or brand context.",
+          "url": "https://example.com/",
+          "evidence": "14 characters"
+        },
+        {
+          "id": "missing-meta-description",
+          "category": "Metadata",
+          "severity": "high",
+          "title": "Missing meta description",
+          "description": "Missing meta description",
+          "recommendation": "Add a plain-language meta description that summarizes the page value.",
+          "url": "https://example.com/",
+          "evidence": "No meta description was found."
+        },
+        {
+          "id": "missing-canonical",
+          "category": "Indexability",
+          "severity": "low",
+          "title": "Missing canonical tag",
+          "description": "Missing canonical tag",
+          "recommendation": "Add a canonical URL to reduce duplicate-content ambiguity.",
+          "url": "https://example.com/",
+          "evidence": "No rel=canonical tag was found."
+        },
+        {
+          "id": "thin-content",
+          "category": "Content Quality",
+          "severity": "medium",
+          "title": "Page has thin body content",
+          "description": "Page has thin body content",
+          "recommendation": "Add useful, specific content that answers the searcher's intent.",
+          "url": "https://example.com/",
+          "evidence": "21 words found."
+        },
+        {
+          "id": "no-internal-links",
+          "category": "Internal Links",
+          "severity": "medium",
+          "title": "No internal links found",
+          "description": "No internal links found",
+          "recommendation": "Add relevant internal links to related pages or conversion paths.",
+          "url": "https://example.com/",
+          "evidence": "The page does not link to another same-site URL."
+        },
+        {
+          "id": "missing-schema",
+          "category": "Structured Data",
+          "severity": "low",
+          "title": "No structured data detected",
+          "description": "No structured data detected",
+          "recommendation": "Add relevant structured data when it helps describe the entity, service, article, or product.",
+          "url": "https://example.com/",
+          "evidence": "No JSON-LD or microdata blocks were found."
+        }
+      ]
+    }
+  ]
+}
