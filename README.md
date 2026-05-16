@@ -151,6 +151,8 @@ Sample reports:
 - [`samples/seopie-report.json`](./samples/seopie-report.json)
 - [`samples/seopie-issues.csv`](./samples/seopie-issues.csv)
 
+The checked-in sample reports were generated from `https://example.com` to document the current output contract and keep the repository self-explanatory.
+
 ### JSON Shape
 
 The JSON report includes:
